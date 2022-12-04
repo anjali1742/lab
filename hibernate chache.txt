@@ -1,0 +1,165 @@
+1.persistent class
+Employee.java
+
+	package com.javatpoint;    
+	import javax.persistence.*;  
+	import org.hibernate.annotations.Cache;  
+	import org.hibernate.annotations.CacheConcurrencyStrategy;  
+	@Entity  
+	@Table(name="emp1012")  
+	@Cacheable  
+	@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)  
+	public class Employee {    
+	    @Id  
+	private int id;    
+	private String name;    
+	private float salary;    
+	    
+	public Employee() {}    
+	public Employee(String name, float salary) {    
+	    super();    
+	    this.name = name;    
+	    this.salary = salary;    
+	}  
+	public int getId() {  
+	    return id;  
+	}  
+	public void setId(int id) {  
+	    this.id = id;  
+	}  
+        public String getName() {  
+	    return name;  
+	}  
+	public void setName(String name) {  
+	    this.name = name;  
+	}  
+	public float getSalary() {  
+	    return salary;  
+	}  
+	public void setSalary(float salary) {  
+	    this.salary = salary;  
+	}    
+	}    
+
+2)Add project information and configuration in pom.xml file.
+Open pom.xml file and click source. 
+
+
+
+
+1.	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>myfirst.hibernate</groupId>
+  <artifactId>project</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>maven-plugin</packaging>
+
+  <name>project Maven Plugin</name>
+
+  <!-- FIXME change it to the project's website -->
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+ <dependencies>
+ <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>5.6.10.Final</version>
+</dependency>
+  
+  <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.28</version>
+</dependency>
+<dependency>  
+	    <groupId>net.sf.ehcache</groupId>  
+	    <artifactId>ehcache</artifactId>  
+	    <version>2.10.3</version>  
+	</dependency>  
+	      
+	     
+	<dependency>  
+    <groupId>org.hibernate</groupId>  
+	    <artifactId>hibernate-ehcache</artifactId>  
+	    <version>5.2.16.Final</version>  
+	</dependency> 
+
+
+</dependencies>
+  </project>
+
+
+  
+	 
+
+3) Create the Configuration file
+File: hibernate.cfg.xml
+
+
+
+
+	<?xml version='1.0' encoding='UTF-8'?>    
+	<!DOCTYPE hibernate-configuration PUBLIC    
+	          "-//Hibernate/Hibernate Configuration DTD 5.2.0//EN"    
+	          "http://hibernate.sourceforge.net/hibernate-configuration-5.2.0.dtd">    
+	    
+	<hibernate-configuration>    
+	    
+	    <session-factory>    
+        <property name="show_sql">true</property>    
+	        <property name="hbm2ddl.auto">update</property>    
+	        <property name="dialect">mysql</property>    
+	        <property name="connection.url">"jdbc:mysql://localhost:3306/first1"</property>    
+	        <property name="connection.username">system</property>    
+	        <property name="connection.password">jtp</property>    
+	        <property name="connection.driver_class">"com.mysql.jdbc.driver"</property>    
+	         
+	         <property name="cache.use_second_level_cache">true</property>   
+	         <property name="cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>  
+	         <mapping class="com.javatpoint.Employee"/>  
+	    </session-factory>    
+	</hibernate-configuration>    
+
+4) Create the class that retrieves the persistent object.
+File: FetchTest.java
+
+
+
+
+	package com.javatpoint;    
+	    
+	import org.hibernate.Session;    
+	import org.hibernate.SessionFactory;  
+	import org.hibernate.boot.Metadata;  
+	import org.hibernate.boot.MetadataSources;  
+	import org.hibernate.boot.registry.StandardServiceRegistry;  
+	import org.hibernate.boot.registry.StandardServiceRegistryBuilder;  
+	    
+	public class FetchTest {    
+	public static void main(String[] args) {    
+	    StandardServiceRegistry ssr=new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();  
+	    Metadata meta=new MetadataSources(ssr).getMetadataBuilder().build();  
+	      
+	    SessionFactory factory=meta.getSessionFactoryBuilder().build();  
+	        
+	    Session session1=factory.openSession();    
+	    Employee emp1=(Employee)session1.load(Employee.class,10);    
+	    System.out.println(emp1.getId()+" "+emp1.getName()+" "+emp1.getSalary());    
+	    session1.close();    
+	        
+	    Session session2=factory.openSession();    
+	    Employee emp2=(Employee)session2.load(Employee.class,121);    
+	    System.out.println(emp2.getId()+" "+emp2.getName()+" "+emp2.getSalary());    
+	    session2.close();    
+	        
+	}    
+	}    
+
