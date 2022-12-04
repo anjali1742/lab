@@ -1,0 +1,205 @@
+1.hibernate crud operation using criteria with  hql
+
+
+1.pojo class
+
+package myfirst.hibernate.project;
+import org.hibernate.Entity;
+@Entity
+public class Emp {
+	@Id
+	private int eid;
+	private String name;
+	private int salary;
+	public Emp() {
+		super();
+	}
+	public int getSid() {
+		return sid;
+	}
+	public void setSid(int sid) {
+		this.sid = sid;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getSalary() {
+		return salary;
+	}
+	public void setSalary(int salary) {
+		this.salary = salary;
+	}
+	@Override
+	public String toString() {
+		return "Emp [sid=" + sid + ", name=" + name + ", salary=" + salary + "]";
+	}
+	
+	
+	
+	}
+	
+
+
+
+
+
+
+2.pom.xml
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>myfirst.hibernate</groupId>
+  <artifactId>project</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>maven-plugin</packaging>
+
+  <name>project Maven Plugin</name>
+
+  <!-- FIXME change it to the project's website -->
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+ <dependencies>
+ <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>5.6.10.Final</version>
+</dependency>
+  
+  <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.28</version>
+</dependency>
+</dependencies>
+  </project>
+
+
+
+3.hibernate configuration file
+
+
+1.	<?xml version="1.0" encoding="UTF-8"?>  
+2.	<!DOCTYPE hibernate-configuration PUBLIC  
+3.	        "-//Hibernate/Hibernate Configuration DTD 5.3//EN"  
+4.	        "http://www.hibernate.org/dtd/hibernate-configuration-5.3.dtd">  
+5.	<hibernate-configuration>  
+6.	    <session-factory>  
+7.	            
+8.	    <property name="hbm2ddl.auto">update</property>    
+9.	        <property name="dialect">mysql</property>    
+10.	        <property name="connection.url">"jdbc:mysql://localhost:3306/Emp"</property>    
+11.	        <property name="connection.username">root</property>    
+12.	        <property name="connection.password">admin</property>    
+13.	        <property name="connection.driver_class">"com.mysql.jdbc.driver"</property>   
+14.	       <property name="show_sql.auto">true</property>   
+15.	        <mapping class="myfirst.hibernate.Emp"/>  
+
+
+
+
+4.main
+
+
+retrive or insert record
+
+
+package myfirst.hibernate.project;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+public class App {
+
+	public static void main(String[] args) 
+	{
+		Emp e=new Emp();
+		e.setSid(02);
+		e.setName("Anjali");
+		e.setSalary(50000);
+		Configuration cf=new Configuration().configure().addAnnotatedClass(Emp.class);
+		SessionFactory sf=cf.buildSessionFactory();
+		Session ses=sf.openSession();
+		ses.beginTransaction();
+		Query q=ses.createQuery("from Emp");
+                List li=q.list();
+                System.out.println(li);
+		ses.getTransaction().commit();
+		ses.close();
+		
+	}
+
+}
+
+2.delete record
+
+package myfirst.hibernate.project;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+public class App {
+
+	public static void main(String[] args) 
+	{
+		Emp e=new Emp();
+		
+		Configuration cf=new Configuration().configure().addAnnotatedClass(Emp.class);
+		SessionFactory sf=cf.buildSessionFactory();
+		Session ses=sf.openSession();
+		ses.beginTransaction();
+		Query q=ses.createQuery("delete from Emp where id=10");
+                q.executeUpdate();
+		ses.getTransaction().commit();
+		ses.close();
+		
+	}
+
+}
+
+
+3.update 
+
+package myfirst.hibernate.project;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+public class App {
+
+	public static void main(String[] args) 
+	{
+		Emp e=new Emp();
+		
+		Configuration cf=new Configuration().configure().addAnnotatedClass(Emp.class);
+		SessionFactory sf=cf.buildSessionFactory();
+		Session ses=sf.openSession();
+		ses.beginTransaction();
+         	
+	        Query q=ses.createQuery("update Emp set name=:n where id=:i");  
+	        q.setParameter("n","Anjali");  
+	        q.setParameter("i",02);  
+	  
+	      int status=q.executeUpdate();  
+	           System.out.println(status);  
+
+	     System.out.println("rows updated");
+		ses.getTransaction().commit();
+		ses.close();
+		
+	}
+
+}
